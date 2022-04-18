@@ -1,0 +1,546 @@
+{% extends 'base.html' %}
+{% load static experts_tags %}
+{% block body %}
+{% mo_list as mos %}
+{% pos_list as pos %}
+{% oo_list as oos %}
+{% subj_list as subjs %}
+
+<div class="profile" align="center" style="padding-top:-10%">
+    <label><h2>Список экспертов</h2><br>
+    {% if experts|length == 0 %}
+       <label><h3>В базе не найдено ни одного эксперта</h3></label>
+    {% else %}
+        {% if experts|length < 15 %}
+          Количество показанных экспертов: {{ experts|length }}</label><br><br>
+        {% else %}
+          Количество показанных экспертов: {{ experts|length }}<br>
+          Показано 15 последних загруженных специалистов</label><br><br>
+        {% endif %}
+    {% if success|length > 0 %}
+      {{ success }}<br>
+    {% endif %}
+    {% if error|length > 0 %}
+      В импортируемом файле были найдены следующие ошибки:<br>
+      {% for el in error %}
+        {{ el }}<br>
+      {% endfor %}
+      <br><br>
+    {% endif %}
+      <div id="zatemnenie_new">
+              <div id="okno_new">
+                <form action="{% url 'operators:experts_list' %}" method="POST">
+                  {% csrf_token %}
+                  <table class="table_crit" align="center" style="width: 80%">
+                    <thead>
+                      <tr>
+                        <th>Параметр</th>
+                        <th>Значение</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td align="right">Фамилия: </td>
+                        <td align="center">
+                          <input type="text" class="form-control" id="floatingInput"
+                                 name="surname" style="text-align: center" required>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="right">Имя: </td>
+                        <td align="center">
+                          <input type="text" class="form-control" id="floatingInput"
+                                 name="name" style="text-align: center" required>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="right">Отчество: </td>
+                        <td align="center">
+                          <input type="text" class="form-control" id="floatingInput"
+                                 name="patronymic" style="text-align: center" required>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="right">МО: </td>
+                        <td align="center">
+                          <input list="moslist" class="form-control" name="mo"
+                           placeholder="Начните вводить название МО" style="text-align: center" required>
+                          <datalist id="moslist" class="oo_field">
+                            {% for el in mos %}
+                                <option value="{{ el.name_mo }}">
+                            {% endfor %}
+                          </datalist>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="right">ОО: </td>
+                        <td align="center">
+                          <input list="ooslist" class="form-control" name="oo"
+                           placeholder="Начните вводить название ОО" style="text-align: center" required>
+                          <datalist id="ooslist" class="oo_field">
+                            {% for el in oos %}
+                                <option value="{{ el.short_name }}">
+                            {% endfor %}
+                          </datalist>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="right">Предметная область: </td>
+                        <td align="center">
+                          <input list="subjslist" class="form-control" name="subj"
+                           placeholder="Начните вводить название предметной области..."
+                                 style="text-align: center" required>
+                          <datalist id="subjslist" class="oo_field">
+                            {% for el in subjs %}
+                                <option value="{{ el.name }}">
+                            {% endfor %}
+                          </datalist>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="right">Должность: </td>
+                        <td align="center">
+                          <input list="poslist" class="form-control" name="pos"
+                           placeholder="Начните вводить название должность..." style="text-align: center"
+                                 required>
+                          <datalist id="poslist" class="oo_field">
+                            {% for el in pos %}
+                                <option value="{{ el.name_pos }}">
+                            {% endfor %}
+                          </datalist>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="right">Электронная почта: </td>
+                        <td align="center">
+                          <input type="email" class="form-control" id="floatingInput"
+                                 name="email" style="text-align: center" required>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="right">СНИЛС: </td>
+                        <td align="center">
+                          <input type="text" class="form-control" id="floatingInput"
+                                 name="snils" style="text-align: center" required>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="right">Статус активности: </td>
+                        <td align="center">
+                          <select class="form-control" name="status" style="text-align: center">
+                              <option>Да</option>
+                              <option>Нет</option>
+                          </select>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div style="width: 30%; margin:0 auto;">
+                    <input type="hidden" name="new_exp" value="yes">
+                    <button class="w-100 btn btn-lg btn-primary" type="submit">
+                      Сохранить
+                    </button>
+                  </div>
+                  <a href="#" class="close">Закрыть окно</a>
+                </form>
+              </div>
+            </div>
+      <a href="#zatemnenie_new"><img src="{% static 'work/add_user.png' %}" height="50px" width="50px"></a>
+      <div id="zatemnenie_import">
+              <div id="okno_import">
+                <form action="{% url 'operators:import_exp' %}" method="POST" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  <table border="0" align="center" style="width: 80%">
+                    <tr>
+                      <td align="right">Файл (формат -xlsx): </td>
+                      <td align="center">
+                        <input type="file" name="excel" accept=".xlsx" required>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">
+                        <br>Файл должен содержать следующие столбцы со следующими заголовками:<br>ФИО<br>МО<br>ОО<br>
+                        Предметная область<br>Должность<br>Электронная почта<br>СНИЛС<br>
+                      </td>
+                    </tr>
+                  </table>
+                  <div style="width: 30%; margin: 0 auto;">
+                    <input type="hidden" name="import_exp" value="yes">
+                        <button class="w-100 btn btn-lg btn-primary" type="submit" style="30%">
+                          Импортировать
+                        </button>
+                  </div>
+                </form>
+                <a href="#" class="close">Закрыть окно</a>
+              </div>
+            </div>
+      <a href="#zatemnenie_import"><img src="{% static 'work/import.png' %}" height="50px" width="50px"></a>
+      <a href="#"><img src="{% static 'work/export.png' %}" height="50px" width="50px"  style="align: left"></a>
+      <br><table class="table_crit">
+        <thead>
+          <form method="GET">
+            {% csrf_token %}
+            <tr>
+              <th>Дата внесения в базу</th>
+              <th>ФИО<br>
+                <div id="zatemnenie_search_fio">
+                    <div id="okno_search_fio">
+                      <center>Поиск по ФИО</center>
+                          <table class="table_crit">
+                              <thead>
+                                  <tr>
+                                      <th>Параметр</th>
+                                      <th>Значение</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  <tr>
+                                      <td>Фамилия</td>
+                                      <td>
+                                          <input type="text" class="form-control" name="surname">
+                                      </td>
+                                  </tr>
+                                  <tr>
+                                      <td>Имя</td>
+                                      <td>
+                                          <input type="text" class="form-control" name="name">
+                                      </td>
+                                  </tr>
+                                  <tr>
+                                      <td>Отчество</td>
+                                      <td>
+                                          <input type="text" class="form-control" name="patronymic">
+                                      </td>
+                                  </tr>
+                              </tbody>
+                          </table>
+                          <div style="width: 30%; margin: 0 auto;">
+                              <button class="w-100 btn btn-lg btn-primary" type="submit" onclick="document.location.href ='#'">
+                                Поиск
+                              </button>
+                          </div>
+                      <a href="#" class="close">Закрыть окно</a>
+                    </div>
+                  </div>
+                  <a href="#zatemnenie_search_fio">
+                        <img src="{% static 'work/discover.png' %}" height="25px" width="25px"></a>
+              </th>
+              <th>МО<br>
+                <div id="zatemnenie_app_mo">
+                    <div id="okno_app_mo">
+                      Выберите нужное МО:
+                        <select size="10" name="filter_mo" style="width:100%; text-align: center">
+                          {% for el in filter.mo %}
+                            <option>{{ el }}</option>
+                          {% endfor %}
+                        </select>
+                        <button class="w-100 btn btn-lg btn-primary" type="submit"
+                            onclick="document.location.href ='#'">
+                          Применить фильтр
+                        </button>
+                      <a href="#" class="close">Закрыть окно</a>
+                    </div>
+                  </div>
+                  <a href="#zatemnenie_app_mo">
+                <img src="{% static 'work/filter.png' %}" height="25px" width="25px"></a></th>
+              <th>ОО<br>
+                <div id="zatemnenie_search_oo">
+                      <div id="okno_search_oo">
+                        <center>Поиск по ОО</center>
+                            <table class="table_crit">
+                                <thead>
+                                    <tr>
+                                        <th>Параметр</th>
+                                        <th>Значение</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Название ОО</td>
+                                        <td>
+                                            <input type="text" class="form-control" name="oo">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div style="width: 30%; margin: 0 auto;">
+                                <button class="w-100 btn btn-lg btn-primary" type="submit"
+                                    onclick="document.location.href ='#'">
+                                  Поиск
+                                </button>
+                            </div>
+                        <a href="#" class="close">Закрыть окно</a>
+                      </div>
+                    </div>
+                    <a href="#zatemnenie_search_oo">
+                          <img src="{% static 'work/discover.png' %}" height="25px" width="25px"></a></th>
+              <th>Предметная область<br>
+                <div id="zatemnenie_app_subj">
+                      <div id="okno_app_subj">
+                          Выберите нужную предметную область:
+                              <select size="10" name="filter_subj" style="width:100%; text-align: center">
+                                  {% for el in filter.subj %}
+                                      <option>{{ el }}</option>
+                                  {% endfor %}
+                              </select>
+                              <button class="w-100 btn btn-lg btn-primary" type="submit"
+                                onclick="document.location.href ='#'">
+                                  Применить фильтр
+                              </button>
+                          <a href="#" class="close">Закрыть окно</a>
+                      </div>
+                  </div>
+                  <a href="#zatemnenie_app_subj">
+                      <img src="{% static 'work/filter.png' %}" height="25px" width="25px"></a>
+              </th>
+              <th>Должность<br>
+                <div id="zatemnenie_pos">
+                    <div id="okno_pos">
+                        Выберите нужную должность:
+                            <select size="10" name="filter_pos" style="width:100%; text-align: center">
+                                {% for el in filter.pos %}
+                                    <option>{{ el }}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="w-100 btn btn-lg btn-primary" type="submit"
+                                onclick="document.location.href ='#'">
+                                Применить фильтр
+                            </button>
+                        <a href="#" class="close">Закрыть окно</a>
+                    </div>
+                </div>
+                <a href="#zatemnenie_pos">
+                    <img src="{% static 'work/filter.png' %}" height="25px" width="25px"></a>
+              </th>
+              <th>СНИЛС
+                <div id="zatemnenie_search_snils">
+                      <div id="okno_search_snils">
+                        <center>Поиск по СНИЛС</center>
+                            <table class="table_crit">
+                                <thead>
+                                    <tr>
+                                        <th>Параметр</th>
+                                        <th>Значение</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>СНИЛС</td>
+                                        <td>
+                                            <input type="text" class="form-control" name="snils">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div style="width: 30%; margin: 0 auto;">
+                                <button class="w-100 btn btn-lg btn-primary" type="submit"
+                                    onclick="document.location.href ='#'">
+                                  Поиск
+                                </button>
+                            </div>
+                        <a href="#" class="close">Закрыть окно</a>
+                      </div>
+                    </div>
+                    <a href="#zatemnenie_search_snils">
+                          <img src="{% static 'work/discover.png' %}" height="25px" width="25px"></a></th>
+              </th>
+              <th>Статус активности<br>
+                <div id="zatemnenie_status">
+                    <div id="okno_status">
+                        Выберите нужный статус:
+                            <select size="10" name="filter_status" style="width:100%; text-align: center">
+                                {% for el in filter.status %}
+                                    <option>{{ el }}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="w-100 btn btn-lg btn-primary" type="submit"
+                                onclick="document.location.href ='#'">
+                                Применить фильтр
+                            </button>
+                        <a href="#" class="close">Закрыть окно</a>
+                    </div>
+                </div>
+                <a href="#zatemnenie_status">
+                    <img src="{% static 'work/filter.png' %}" height="25px" width="25px"></a>
+              </th>
+              <th>Действия</th>
+            </tr>
+          </form>
+        </thead>
+        <tbody>
+          {% for el in experts|slice:":15" %}
+            <tr>
+              <td>
+                {{ el.date_add|date:"d.m.Y"}}
+              </td>
+              <td>
+                {{ el.surname }} {{ el.name }} {{ el.patronymic }}
+              </td>
+              <td>
+                {{ el.mo }}
+              </td>
+              <td>
+                {{ el.oo }}
+              </td>
+              <td>
+                {{ el.subj }}
+              </td>
+              <td>
+                {{ el.pos }}
+              </td>
+              <td>
+                {{ el.snils }}
+              </td>
+              <td>
+                {% if el.status is True %}
+                  <img src="{% static 'work/True.png' %}" height="50px" width="50px">
+                {% else %}
+                  <img src="{% static 'work/False.png' %}" height="50px" width="50px">
+                {% endif %}
+              </td>
+              <td>
+                <div id="zatemnenie_{{ el.id }}">
+                  <div id="okno_{{ el.id }}">
+                    <form action="{% url 'operators:edit_exp' %}" method="POST">
+                      {% csrf_token %}
+                      <table class="table_crit" align="center" style="width: 80%">
+                        <thead>
+                          <tr>
+                            <th>Параметр</th>
+                            <th>Значение</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td align="right">Фамилия: </td>
+                            <td align="center">
+                              <input type="text" class="form-control" id="floatingInput"
+                                     name="surname" value="{{ el.surname }}"
+                                     style="text-align: center" required>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td align="right">Имя: </td>
+                            <td align="center">
+                              <input type="text" class="form-control" id="floatingInput"
+                                     name="name" value="{{ el.name }}"
+                                     style="text-align: center" required>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td align="right">Отчество: </td>
+                            <td align="center">
+                              <input type="text" class="form-control" id="floatingInput"
+                                     name="patronymic" value="{{ el.patronymic }}"
+                                     style="text-align: center" required>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td align="right">МО: </td>
+                            <td align="center">
+                              <input list="moslist" class="form-control" name="mo" value="{{ el.mo }}"
+                               placeholder="Начните вводить название МО" style="text-align: center" required>
+                              <datalist id="moslist" class="oo_field">
+                                {% for el in mos %}
+                                    <option value="{{ el.name_mo }}">
+                                {% endfor %}
+                              </datalist>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td align="right">ОО: </td>
+                            <td align="center">
+                              <input list="ooslist" class="form-control" name="oo" value="{{ el.oo.short_name }}"
+                               placeholder="Начните вводить название ОО" style="text-align: center" required>
+                              <datalist id="ooslist" class="oo_field">
+                                {% for el in oos %}
+                                    <option value="{{ el.short_name }}">
+                                {% endfor %}
+                              </datalist>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td align="right">Предметная область: </td>
+                            <td align="center">
+                              <input list="subjslist" class="form-control" name="subj" value="{{ el.subj }}"
+                               placeholder="Начните вводить название предметной области..."
+                                     style="text-align: center" required>
+                              <datalist id="subjslist" class="oo_field">
+                                {% for el in subjs %}
+                                    <option value="{{ el.name }}">
+                                {% endfor %}
+                              </datalist>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td align="right">Должность: </td>
+                            <td align="center">
+                              <input list="poslist" class="form-control" name="pos" value="{{ el.pos }}"
+                               placeholder="Начните вводить название должность..." style="text-align: center"
+                                     required>
+                              <datalist id="poslist" class="oo_field">
+                                {% for el in pos %}
+                                    <option value="{{ el.name_pos }}">
+                                {% endfor %}
+                              </datalist>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td align="right">Электронная почта: </td>
+                            <td align="center">
+                              <input type="email" class="form-control" id="floatingInput"
+                                     name="email" value="{{ el.email }}"
+                                     style="text-align: center" required>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td align="right">СНИЛС: </td>
+                            <td align="center">
+                              <input type="text" class="form-control" id="floatingInput"
+                                     name="snils" value="{{ el.snils }}"
+                                     style="text-align: center" required>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td align="right">Статус активности: </td>
+                            <td align="center">
+                              <select class="form-control" name="status" style="text-align: center">
+                                {% if el.status is True %}
+                                  <option selected>Да</option>
+                                  <option>Нет</option>
+                                {% else %}
+                                  <option>Да</option>
+                                  <option selected>Нет</option>
+                                {% endif %}
+                              </select>
+                            </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                      <div style="width: 30%; margin:0 auto;">
+                        <input type="hidden" name="edit_exp" value="{{ el.id }}">
+                        <button class="w-100 btn btn-lg btn-primary" type="submit">
+                          Сохранить
+                        </button>
+                      </div>
+                      <a href="#" class="close">Закрыть окно</a>
+                    </form>
+                  </div>
+                </div>
+                <a href="#zatemnenie_{{ el.id }}"><img src="{% static 'work/edit.png' %}" height="50px" width="50px"></a><br>
+                <form method="POST" action="{% url 'operators:del_exp' %}"  id="del_form">
+                  {% csrf_token %}
+                  <input type="hidden" value="{{ el.id }}" name="del_exp"><br>
+                  <a href="javascript:;"
+                     onclick="if (confirm('Удалить специалиста?')){document.getElementById('del_form').submit();}">
+                    <img src="{% static 'work/delete.png' %}" height="50px" width="50px">
+                  </a>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+  {% endif %}
+</div>
+{% endblock %}

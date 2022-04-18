@@ -1,0 +1,458 @@
+{% extends 'base.html' %}
+{% load static distrib_tags expetis_tags %}
+{% block body %}
+<div class="profile" align="center" style="padding-top:-10%">
+    <label><h2>Ручное распределение заявки</h2><br>
+    {% apps_list as apps %}
+    {% if apps|length == 0 %}
+        <label><h3>В базе не найдено заявок поданных в сроки подачи заявок выбранного периода</h3></label>
+    {% else %}
+        {% if expert is None %}
+            {% experts_list as experts %}
+            {% filter_exp as filter %}
+            {% if experts|length == 0 %}
+                <label><h3>Эксперты не найдены</h3></label>
+            {% else %}
+                <label><h3>Выберите нужного эксперта</h3></label><br>
+                <label><h5>Найдено {{ experts|length }} экспертов</h5></label>
+                <table class="table_crit">
+                <form method="POST">
+                    {% csrf_token %}
+                    <thead>
+                      <tr>
+                        <th>Выбор</th>
+                        <th>Дата внесения в базу</th>
+                        <th>ФИО<br>
+                          <div id="zatemnenie_search_exp_fio">
+                              <div id="okno_search_exp_fio">
+                                <center>Поиск по ФИО</center>
+                                    <table class="table_crit">
+                                        <thead>
+                                            <tr>
+                                                <th>Параметр</th>
+                                                <th>Значение</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Фамилия</td>
+                                                <td>
+                                                    <input type="text" class="form-control" name="exp_surname">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Имя</td>
+                                                <td>
+                                                    <input type="text" class="form-control" name="exp_name">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Отчество</td>
+                                                <td>
+                                                    <input type="text" class="form-control" name="exp_patronymic">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div style="width: 30%; margin: 0 auto;">
+                                        <button class="w-100 btn btn-lg btn-primary" type="submit">
+                                          Поиск
+                                        </button>
+                                    </div>
+                                <a href="#" class="close">Закрыть окно</a>
+                              </div>
+                            </div>
+                            <a href="#zatemnenie_search_exp_fio">
+                                  <img src="{% static 'work/discover.png' %}" height="25px" width="25px"></a>
+                          </th>
+                        <th>МО<br>
+                          <div id="zatemnenie_exp_mo">
+                              <div id="okno_exp_mo">
+                                Выберите нужное МО:
+                                  <select size="10" name="filter_mo" style="width:100%; text-align: center">
+                                    {% for el in filter.mo %}
+                                      <option>{{ el }}</option>
+                                    {% endfor %}
+                                  </select>
+                                  <button class="w-100 btn btn-lg btn-primary" type="submit">
+                                    Применить фильтр
+                                  </button>
+                                <a href="#" class="close">Закрыть окно</a>
+                              </div>
+                            </div>
+                            <a href="#zatemnenie_exp_mo">
+                          <img src="{% static 'work/filter.png' %}" height="25px" width="25px"></a></th>
+                        <th>ОО<br>
+                        <th>Предметная область<br>
+                            <div id="zatemnenie_exp_subj">
+                                <div id="okno_exp_subj">
+                                    Выберите нужную предметную область:
+                                        <select size="10" name="filter_subj" style="width:100%; text-align: center">
+                                            {% for el in filter.subj %}
+                                            <option>{{ el }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <button class="w-100 btn btn-lg btn-primary" type="submit">
+                                            Применить фильтр
+                                        </button>
+                                    <a href="#" class="close">Закрыть окно</a>
+                                </div>
+                            </div>
+                            <a href="#zatemnenie_exp_subj">
+                                <img src="{% static 'work/filter.png' %}" height="25px" width="25px"></a></th>
+                        <th>Должность<br>
+                            <div id="zatemnenie_exp_pos">
+                                <div id="okno_exp_pos">
+                                    Выберите нужную должность:
+                                        <select size="10" name="filter_pos" style="width:100%; text-align: center">
+                                            {% for el in filter.pos %}
+                                                <option>{{ el }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <button class="w-100 btn btn-lg btn-primary" type="submit">
+                                            Применить фильтр
+                                        </button>
+                                    <a href="#" class="close">Закрыть окно</a>
+                                </div>
+                            </div>
+                            <a href="#zatemnenie_exp_pos">
+                                <img src="{% static 'work/filter.png' %}" height="25px" width="25px"></a>
+                        </th>
+                        <th>СНИЛС<br>
+                            <div id="zatemnenie_search_snils">
+                              <div id="okno_search_snils">
+                                <center>Поиск по СНИЛС</center>
+                                    <table class="table_crit">
+                                        <thead>
+                                            <tr>
+                                                <th>Параметр</th>
+                                                <th>Значение</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>СНИЛС</td>
+                                                <td><input type="text" class="form-control" name="snils"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div style="width: 30%; margin: 0 auto;">
+                                        <button class="w-100 btn btn-lg btn-primary" type="submit">
+                                          Поиск
+                                        </button>
+                                    </div>
+                                <a href="#" class="close">Закрыть окно</a>
+                              </div>
+                            </div>
+                            <a href="#zatemnenie_search_snils">
+                                  <img src="{% static 'work/discover.png' %}" height="25px" width="25px"></a>
+                        </th>
+                        <th>Статус активности</th>
+                      </tr>
+                    </thead>
+                        <input type="hidden" value="yes" name="filter_search">
+                        <input type="hidden" value="{{ period }}" name="period">
+                        <input type="hidden" value="yes" name="new_distrib">
+                </form>
+                <tbody>
+                  {% for el in experts|slice:":15" %}
+                    <tr>
+                      <td>
+                          <form method="POST">
+                            {% csrf_token %}
+                              <input type="hidden" value="{{ el.id }}" name="id_exp">
+                              <input type="hidden" value="{{ period }}" name="period">
+                              <input type="hidden" value="yes" name="new_distrib">
+                              <button class="w-100 btn btn-lg btn-primary" type="submit" style="30%">
+                                  Выбрать эксперта
+                              </button>
+                          </form>
+                      </td>
+                      <td>
+                        {{ el.date_add|date:"d.m.Y"}}
+                      </td>
+                      <td>
+                        {{ el.surname }} {{ el.name }} {{ el.patronymic }}
+                      </td>
+                      <td>
+                        {{ el.mo }}
+                      </td>
+                      <td>
+                        {{ el.oo }}
+                      </td>
+                      <td>
+                        {{ el.subj }}
+                      </td>
+                      <td>
+                        {{ el.pos }}
+                      </td>
+                      <td>
+                        {{ el.snils }}
+                      </td>
+                      <td>
+                        {% if el.status is True %}
+                          <img src="{% static 'work/True.png' %}" height="50px" width="50px">
+                        {% else %}
+                          <img src="{% static 'work/False.png' %}" height="50px" width="50px">
+                        {% endif %}
+                      </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        {% else %}
+            {% filter_apps as filter_app %}
+            <label><h3>Выбранный эксперт</h3></label>
+            <table class="table_crit">
+                <thead>
+                    <tr>
+                        <th>Фамилия</th>
+                        <th>Имя</th>
+                        <th>Отчество</th>
+                        <th>МО</th>
+                        <th>ОО</th>
+                        <th>Предметная область</th>
+                        <th>Должность</th>
+                        <th>СНИЛС</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ expert.surname }}</td>
+                        <td>{{ expert.name }}</td>
+                        <td>{{ expert.patronymic }}</td>
+                        <td>{{ expert.mo }}</td>
+                        <td>{{ expert.oo }}</td>
+                        <td>{{ expert.subj }}</td>
+                        <td>{{ expert.pos }}</td>
+                        <td>{{ expert.snils }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <label><h3>Выберите заявку (отображены последние 15 заявок):</h3></label><br>
+            <label><h5>Найдено {{ apps|length }} заявок</h5>
+                <table class="table_crit">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <thead>
+                          <tr>
+                            <th>Выбор</th>
+                            <th>Дата подачи заявки</th>
+                            <th>ФИО<br>
+                              <div id="zatemnenie_search_app_fio">
+                                  <div id="okno_search_app_fio">
+                                    <center>Поиск по ФИО</center>
+                                        <table class="table_crit">
+                                            <thead>
+                                                <tr>
+                                                    <th>Параметр</th>
+                                                    <th>Значение</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Фамилия</td>
+                                                    <td>
+                                                        <input type="text" class="form-control" name="app_surname">
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Имя</td>
+                                                    <td>
+                                                        <input type="text" class="form-control" name="app_name">
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Отчество</td>
+                                                    <td>
+                                                        <input type="text" class="form-control" name="app_patronymic">
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <div style="width: 30%; margin: 0 auto;">
+                                            <button class="w-100 btn btn-lg btn-primary" type="submit">
+                                              Поиск
+                                            </button>
+                                        </div>
+                                    <a href="#" class="close">Закрыть окно</a>
+                                  </div>
+                                </div>
+                                <a href="#zatemnenie_search_app_fio">
+                                      <img src="{% static 'work/discover.png' %}" height="25px" width="25px"></a>
+                              </th>
+                            <th>МО<br>
+                              <div id="zatemnenie_app_mo">
+                                  <div id="okno_app_mo">
+                                    Выберите нужное МО:
+                                      <select size="10" name="filter_app_mo" style="width:100%; text-align: center">
+                                        {% for el in filter_app.mo %}
+                                          <option>{{ el }}</option>
+                                        {% endfor %}
+                                      </select>
+                                      <button class="w-100 btn btn-lg btn-primary" type="submit">
+                                        Применить фильтр
+                                      </button>
+                                    <a href="#" class="close">Закрыть окно</a>
+                                  </div>
+                                </div>
+                                <a href="#zatemnenie_app_mo">
+                              <img src="{% static 'work/filter.png' %}" height="25px" width="25px"></a></th>
+                            <th>ОО</th>
+                            <th>Предметная область<br>
+                                <div id="zatemnenie_app_subj">
+                                    <div id="okno_app_subj">
+                                        Выберите нужную предметную область:
+                                            <select size="10" name="filter_app_subj" style="width:100%; text-align: center">
+                                                {% for el in filter_app.subj %}
+                                                    <option>{{ el }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <button class="w-100 btn btn-lg btn-primary" type="submit">
+                                                Применить фильтр
+                                            </button>
+                                        <a href="#" class="close">Закрыть окно</a>
+                                    </div>
+                                </div>
+                                <a href="#zatemnenie_app_subj">
+                                    <img src="{% static 'work/filter.png' %}" height="25px" width="25px"></a></th>
+                            <th>Должность<br>
+                                <div id="zatemnenie_app_pos">
+                                    <div id="okno_app_pos">
+                                        Выберите нужную должность:
+                                            <select size="10" name="filter_app_pos" style="width:100%; text-align: center">
+                                                {% for el in filter_app.pos %}
+                                                    <option>{{ el }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <button class="w-100 btn btn-lg btn-primary" type="submit">
+                                                Применить фильтр
+                                            </button>
+                                        <a href="#" class="close">Закрыть окно</a>
+                                    </div>
+                                </div>
+                                <a href="#zatemnenie_app_pos">
+                                    <img src="{% static 'work/filter.png' %}" height="25px" width="25px"></a>
+                            </th>
+                            <th>Текущая категория</th>
+                            <th>Заявленная категория<br>
+                                <div id="zatemnenie_app_cat">
+                                    <div id="okno_app_cat">
+                                        Выберите нужную должность:
+                                            <select size="10" name="filter_app_cat" style="width:100%; text-align: center">
+                                                {% for el in filter_app.dec_cat %}
+                                                    <option>{{ el }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <button class="w-100 btn btn-lg btn-primary" type="submit">
+                                                Применить фильтр
+                                            </button>
+                                        <a href="#" class="close">Закрыть окно</a>
+                                    </div>
+                                </div>
+                                <a href="#zatemnenie_app_cat">
+                                    <img src="{% static 'work/filter.png' %}" height="25px" width="25px"></a>
+                            </th>
+                            <th>Форма аттестации</th>
+                            <th>Статус</th>
+                          </tr>
+                        </thead>
+                            <input type="hidden" value="yes" name="filter_search">
+                            <input type="hidden" value="{{ period }}" name="period">
+                            <input type="hidden" value="{{ expert.id }}" name="expert">
+                            <input type="hidden" value="yes" name="new_distrib">
+                    </form>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <tbody>
+                          {% for el in apps|slice:":15" %}
+                            <tr>
+                              <td>
+                                  {% if ids is not None %}
+                                    {% for id in ids %}
+                                        {% if id == el.id  %}
+                                            <input type="checkbox" style="width: 100px; heigth:100px" width="40px" height="40px"
+                                                   value="{{ el.id }}" name="id_apps" checked>
+                                        {% else %}
+                                            <input type="checkbox" style="width: 100px; heigth:100px" width="40px" height="40px"
+                                                   value="{{ el.id }}" name="id_apps">
+                                        {% endif %}
+                                    {% endfor %}
+                                  {% else %}
+                                        <input type="checkbox" style="width: 100px; heigth:100px" width="40px" height="40px"
+                                               value="{{ el.id }}" name="id_apps">
+                                  {% endif %}
+                              </td>
+                              <td>
+                                {{ el.date_reg|date:"d.m.Y" }}
+                              </td>
+                              <td>
+                                {{ el.user_profile.surname }} {{ el.user_profile.name }}<br>
+                                  {{ el.user_profile.patronymic }}
+                              </td>
+                              <td>
+                                {{ el.user_profile.mo }}
+                              </td>
+                              <td>
+                                {{ el.oo }}
+                              </td>
+                              <td>
+                                {{ el.subj_area }}
+                              </td>
+                              <td>
+                                {{ el.pos }}
+                              </td>
+                              <td>
+                                {% if el.cat_have is None %}
+                                  Нет
+                                {% else %}
+                                  {{ el.cat_have }}
+                                {% endif %}
+                              </td>
+                              <td>
+                                {{ el.dec_cat }}
+                              </td>
+                              <td>
+                                {{ el.form }}
+                              </td>
+                              <td>
+                                {{ el.status }}
+                              </td>
+                            </tr>
+                        {% endfor %}
+                            <tr>
+                                <td>
+                                    Этап всестороннего анализа:
+                                </td>
+                                <td>
+                                    <select class="form-control" name="stage" style="text-align: center">
+                                        {% get_stages as stages %}
+                                        {% for stage in stages %}
+                                            {% if stage.name_stage != 'Оператор %}
+                                                <option value="{{ stage.id }}">{{ stage.name_stage }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="11">
+                                    <div style="width: 30%; margin: 0 auto;">
+                                       <input type="hidden" value="yes" name="save_distrib">
+                                       <input type="hidden" value="yes" name="new_distrib">
+                                       <input type="hidden" value="{{ expert.id }}" name="expert_id">
+                                       <input type="hidden" value="{{ period }}" name="period">
+                                        <button class="w-100 btn btn-lg btn-primary" type="submit">
+                                            Распределить заявки
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </form>
+                </table>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

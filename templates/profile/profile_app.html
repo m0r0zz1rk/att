@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block body %}
+  <form method="POST" action="{% url 'applications:profile' %}">
+    {% csrf_token %}
+    <div class="profile" align="center" style="padding-top:-10%">
+      {% if message is not None %}
+      <label><h2>{{ message }}</h2></label><br><br>
+      {% endif %}
+      <label>Муниципальное образование:</label>
+      <input type="text" class="form-control" id="profileInput" value="{{ profile.mo }}"
+                   name="mo" style="width: 50%; text-align: center" disabled><br>
+      <label>Дата регистрации:</label>
+      <input type="date" class="form-control" id="floatingInput" value="{{ profile.registration_date|date:'Y-m-d' }}"
+                   name="registration_date" style="width: 50%; text-align: center" disabled><br>
+      <label>Фамилия:</label>
+      <input type="text" class="form-control" id="floatingInput" value="{{ profile.surname }}"
+                   name="surname" style="width: 50%; text-align: center" required><br>
+      <label>Имя:</label>
+      <input type="text" class="form-control" id="floatingInput" value="{{ profile.name }}"
+                   name="name" style="width: 50%; text-align: center" required><br>
+      <label>Отчество:</label>
+      <input type="text" class="form-control" id="floatingInput" value="{{ profile.patronymic }}"
+                   name="patronymic" style="width: 50%; text-align: center" required><br>
+      <label>Дата рождения:</label>
+      <input type="date" class="form-control" id="floatingInput" value="{{ profile.birthday|date:'Y-m-d' }}"
+                   name="birthday" style="width: 50%; text-align: center"><br>
+      <label>Пол:</label>
+      <select class="form-control" id="floatingInput" name="sex" style="width: 50%; text-align: center">
+        {% if profile.sex is True %}
+          <option selected>Мужской</option>
+          <option>Женский</option>
+        {% else %}
+          <option>Мужской</option>
+          <option selected>Женский</option>
+        {% endif %}
+      </select><br>
+      <label>Номер телефона:</label>
+      <input type="number" class="form-control" id="floatingInput" value="{{ profile.phone }}"
+                   name="phone" style="width: 50%; text-align: center"><br><br>
+      <table align="center" style="width:20%">
+        <tr>
+          <td>
+            <button class="w-100 btn btn-lg btn-primary" type="submit" style="width:5%; text-align: center">
+            {% if profile.first_login is True %}
+              Сохранить информацию
+            {% else %}
+              Изменить информацию
+            {% endif %}
+            </button>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+  </form>
+
+{% endblock %}

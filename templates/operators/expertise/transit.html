@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body %}
+      <center>
+            <form id='form' action="{% url 'operators:distribution_list' %}" method="GET">
+                  {% csrf_token %}
+                  <input type="hidden" value="{{ period }}" name="period">
+            </form>
+            <label>
+                  {% if info is not None %}
+                        {{ info }}
+                  {% else %}
+                        Добавляем назначение. Пожалуйста, подождите....
+                  {% endif %}
+            </label><br>
+            <img src="{% static 'work/load.gif'%}">
+      </center>
+      <script>
+            setTimeout(() => {
+               document.getElementById('form').submit();
+            }, 3000)
+      </script>
+      <!-- <meta http-equiv="refresh" content="3; URL=/new_app_crits/{{ id_app }}"> -->
+{% endblock %}

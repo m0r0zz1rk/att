@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body %}
+      <center>
+            <form id='form' action="{% url 'applications:new_app_crits' %}" method="POST">
+                  {% csrf_token %}
+                  <input type="hidden" value="{{ id_app }}" name="id_app">
+            </form>
+            <label>Записываем даные. Пожалуйста, подождите....</label><br>
+            <img src="{% static 'work/load.gif'%}">
+      </center>
+      <script>
+            setTimeout(() => {
+               document.getElementById('form').submit();
+            }, 3000)
+      </script>
+      <!-- <meta http-equiv="refresh" content="3; URL=/new_app_crits/{{ id_app }}"> -->
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="profile" align="center" style="padding-top:-10%">
+    <label><h2>Редактирование критерия "{{ crit.name }} - {{ crit.description }}"</h2></label><br><br>
+    <table class="table_crit">
+      <thead>
+        <tr>
+          <th>Какая информация должна быть предоставлена:</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align:justify">
+            {% if crit.description_crit is None %}
+              Информация отсутствует
+            {% else %}
+              {{ crit.description_crit }}
+            {% endif %}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <form method="POST" action="{% url 'applications:change_crit' %}">
+      {% csrf_token %}
+      <table class="table_crit">
+        <thead>
+          <tr>
+            {% for key,value in pars.items %}
+              <th>{{ value }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {% for key,value in pars.items %}
+              <td><textarea name="par_{{ key }}" required></textarea></td>
+            {% endfor %}
+          </tr>
+        </tbody>
+      </table>
+      <table align="center" style="width:20%">
+        <tr>
+          <td>
+            <button class="w-100 btn btn-lg btn-primary" type="submit">Внести данные</button>
+          </td>
+        </tr>
+      </table>
+      <input type="hidden" value="1" name="new_rec">
+      <input type="hidden" value="{{ id_app }}" name="id_app">
+      <input type="hidden" value="{{ crit.id }}" name="crit_id">
+    </form>
+    <br><br><h3><center>Внесенные ранее данные:</center></h3>
+    {% if dict|length == 0 %}
+      <center>Данные не найдены</center>
+    {% else %}
+      <table class="table_crit">
+        <thead>
+          <tr>
+            <th>№ строки</th>
+            {% for key,value in pars.items %}
+              <th>{{ value }}</th>
+            {% endfor %}
+            <th>Удалить</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for key, value in dict.items %}
+          <tr>
+            <td>
+              {{ key }}
+            </td>
+            {% for el in value %}
+                <td>
+                  {{ el }}
+                </td>
+            {% endfor %}
+            <td>
+              <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" value="{{ id_app }}" name="id_app">
+                <input type="hidden" value="{{ crit.id }}" name="crit_id">
+                <input type="hidden" value="{{ key }}" name="del_row">
+                <input type="hidden" value="1" name="delete">
+                <button class="w-100 btn btn-lg btn-primary" type="submit">Удалить</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}<br><br>
+  <form method="POST">
+    {% csrf_token %}
+    <input type="hidden" value="{{ id_app }}" name="id_app">
+    <input type="hidden" value="{{ crit.id }}" name="crit_id">
+    <input type="hidden" value="1" name="finish_change">
+    <table style="width: 20%" align="center">
+      <tr>
+        <td>
+          <button class="w-100 btn btn-lg btn-primary" type="submit">Сохранить изменения</button>
+        </td>
+      </tr>
+    </table>
+  </form>
+</div>
+{% endblock %}

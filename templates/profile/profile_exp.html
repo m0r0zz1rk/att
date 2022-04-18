@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block body %}
+  <form method="POST" action="{% url 'expert:profile' %}">
+    {% csrf_token %}
+    <div class="profile" align="center" style="padding-top:-10%">
+      <label>Дата внесения в базу:</label>
+      <input type="date" class="form-control" id="floatingInput" value="{{ expert.date_add|date:'Y-m-d' }}"
+                   name="surname" style="width: 50%; text-align: center;" disabled><br>
+      <label>Фамилия:</label>
+      <input type="text" class="form-control" id="floatingInput" value="{{ expert.surname }}"
+                   name="surname" style="width: 50%; text-align: center" disabled><br>
+      <label>Имя:</label>
+      <input type="text" class="form-control" id="floatingInput" value="{{ expert.name }}"
+                   name="name" style="width: 50%; text-align: center" disabled><br>
+      <label>Отчество:</label>
+      <input type="text" class="form-control" id="floatingInput" value="{{ expert.patronymic }}"
+                   name="patronymic" style="width: 50%; text-align: center" disabled><br>
+      <label>Муниципальное образование:</label>
+      <input type="text" class="form-control" id="profileInput" value="{{ expert.mo }}"
+                   name="mo" style="width: 50%; text-align: center" disabled><br>
+      <label>Образовательная организация:</label>
+      <input type="text" class="form-control" id="floatingInput" value="{{ expert.oo }}"
+                   name="patronymic" style="width: 50%; text-align: center" disabled><br>
+      <label>Должность:</label>
+      <input type="text" class="form-control" id="floatingInput" value="{{ expert.pos }}"
+                   name="patronymic" style="width: 50%; text-align: center" disabled><br>
+      <label>Электронная почта:</label>
+      <input type="text" class="form-control" id="floatingInput" value="{{ expert.email }}"
+                   name="patronymic" style="width: 50%; text-align: center" disabled><br>
+      <label>СНИЛС:</label>
+      <input type="text" class="form-control" id="floatingInput" value="{{ expert.snils }}"
+                   name="patronymic" style="width: 50%; text-align: center" disabled><br>
+      <label>Статус:</label>
+      <select class="form-control" id="floatingInput" name="status" style="width: 50%; text-align: center">
+        {% if expert.status is True %}
+          <option selected>Активен</option>
+          <option>Не активен</option>
+        {% else %}
+          <option>Активен</option>
+          <option selected>Не активен</option>
+        {% endif %}
+      </select><br>
+      <table align="center" style="width:30%">
+        <tr>
+          <td>
+            <button class="w-100 btn btn-lg btn-primary" type="submit" style="width:10%; text-align: center">
+              Сохранить информацию
+            </button>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </form>
+
+{% endblock %}

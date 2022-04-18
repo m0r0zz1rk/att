@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static periods_tags expertise_tags %}
+{% block body %}
+{% periods_list as periods %}
+{% get_stages as stages %}
+  {% if apps_broke is not None %}
+    <center>Во время автоматического распределения некоторые заявки не удалось распределить:<br>
+    {% for el in apps_broke %}
+      {{ el }}<br>
+    {% endfor %}
+    </center>
+  {% endif %}
+  {% if info is not None %}
+    <center>{{ info }}</center>
+  {% endif %}
+  <table align="center" border="0">
+    <tr border="0">
+      <td border="0">
+        <div id="zatemnenie_new_auto">
+          <div id="okno_new_auto">
+              {% if periods|length > 0 %}
+                <form action="{% url 'operators:new_distribution' %}" method="POST">
+                  {% csrf_token %}
+                  <table class="table_crit" align="center" style="width: 80%">
+                    <thead>
+                      <tr>
+                        <th>Выберите период: </th>
+                        <th>
+                          <select class="form-control" name="period" style="text-align: center">
+                              {% for el in periods %}
+                                <option value="{{ el.id }}">
+                                  {{ el.name }} ({{ el.date_start_supply }} - {{el.date_end_last}})
+                                </option>
+                              {% endfor %}
+                          </select>
+                        </th>
+                      </tr>
+                      <tr>
+                        <th>Выберите этап всестороннего анализа:</th>
+                        <th>
+                          <select class="form-control" name="stage" style="text-align: center">
+                            {% for stage in stages %}
+                              {% if stage.name_stage != 'Оператор' %}
+                                <option value="{{ stage.id }}">{{ stage.name_stage }}</option>
+                              {% endif %}
+                            {% endfor %}
+                          </select>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td colspan="2">
+                          <input type="hidden" name="new_distrib" value="yes">
+                          <button class="w-100 btn btn-lg btn-primary" type="submit" style="30%">
+                            Распределить заявки
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </form>
+              {% else %}
+                Периоды не найдены<br>
+              {% endif %}
+              <a href="#" class="close">Закрыть окно</a>
+            </div>
+          </div>
+        </div>
+        <button class="w-100 btn btn-lg btn-primary" onclick="window.location.href = '#zatemnenie_new_auto';" >
+          Автоматическое распределение заявок</button>
+      </td>
+      </tr>
+      <tr>
+        <td border="0">
+          <div id="zatemnenie_new_auto">
+            <div id="okno_new_auto">
+                {% if periods|length > 0 %}
+                  <form action="{% url 'operators:new_distribution' %}" method="POST">
+                    {% csrf_token %}
+                    <table class="table_crit" align="center" style="width: 80%">
+                      <thead>
+                        <tr>
+                          <th>Выберите период: </th>
+                          <th>
+                            <select class="form-control" name="period" style="text-align: center">
+                                {% for el in periods %}
+                                  <option value="{{ el.id }}">
+                                    {{ el.name }} ({{ el.date_start_supply }} - {{el.date_end_last}})
+                                  </option>
+                                {% endfor %}
+                            </select>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td colspan="2">
+                            <input type="hidden" name="new_distrib" value="yes">
+                            <button class="w-100 btn btn-lg btn-primary" type="submit" style="30%">
+                              Распределить заявки
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </form>
+                {% else %}
+                  Периоды не найдены<br>
+                {% endif %}
+                <a href="#" class="close">Закрыть окно</a>
+              </div>
+            </div>
+          <button class="w-100 btn btn-lg btn-primary" onclick="window.location.href = '#zatemnenie_new_auto';" >
+          Ручное распределение заявок</button>
+        </td>
+      </tr>
+      <tr>
+      <td>
+        <div id="zatemnenie_list">
+          <div id="okno_list">
+              {% if periods|length > 0 %}
+                <form action="{% url 'operators:distribution_list' %}" method="GET">
+                  {% csrf_token %}
+                  <table class="table_crit" align="center" style="width: 80%">
+                    <thead>
+                      <tr>
+                        <th>Выберите период: </th>
+                        <th>
+                          <select class="form-control" name="period" style="text-align: center">
+                              {% for el in periods %}
+                                <option value="{{ el.id }}">
+                                  {{ el.name }} ({{ el.date_start_supply }} - {{el.date_end_last}})
+                                </option>
+                              {% endfor %}
+                          </select>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td colspan="2">
+                          <input type="hidden" name="new_distrib" value="yes">
+                          <button class="w-100 btn btn-lg btn-primary" type="submit" style="30%">
+                            Показать распределенные заявки
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </form>
+              {% else %}
+                Периоды не найдены<br>
+              {% endif %}
+              <a href="#" class="close">Закрыть окно</a>
+            </div>
+          </div>
+        </div>
+        <button class="w-100 btn btn-lg btn-primary" onclick="window.location.href = '#zatemnenie_list';" >
+          Просмотр распределенных заявок</button>
+      </td>
+    </tr>
+  </table>
+{% endblock %}

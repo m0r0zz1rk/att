@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load editcat_tags %}
+{% block body %}
+<form method="POST">
+    {% csrf_token %}
+    {% forms_list as forms %}
+    <div class="profile" align="center" style="padding-top:-10%">
+      <label><h2>Шаг 2. Информация по аттестационным категориям</h2></label><br><br>
+      <label>Информация по имеющейся категории:</label><br><br>
+      <label>Имеющаяся категория</label>
+      <select class="form-control" id="floatingInput" name="cat_have" style="width: 80%; text-align: center">
+              <option selected>не имею</option>
+              <option>первая</option>
+              <option>высшая</option>
+      </select><br>
+      <label>Реквизиты правового акта</label><br>
+      №<input type="text" id="floatingInput" name="name_doc" style="width: 33%; text-align: center">
+      от <input type="date"  id="floatingInput" name="date_doc" style="width: 34%; text-align: center"><br><br>
+      <label>Срок действия категории</label><br>
+      от  <input type="date" id="floatingInput" name="start_cat" style="width: 33%; text-align: center">
+      до<input type="date"  id="floatingInput" name="finish_cat" style="width: 34%; text-align: center"><br><br><br>
+      <label>Заявленная категория:</label>
+      <select class="form-control" id="floatingInput" name="dec_cat" style="width: 80%; text-align: center">
+              <option>первая</option>
+              <option>высшая</option>
+      </select><br>
+      <label>Форма аттестации:</label>
+      <select class="form-control" id="floatingInput" name="att_form" style="width: 80%; text-align: center">
+          {% for el in forms %}
+            <option value="{{ el.id }}">{{ el.name }}</option>
+          {% endfor %}
+      </select><br>
+    </div>
+    <table align="center" style="width:20%">
+        <tr>
+            <td>
+                <input type="hidden" value="yes" name="to_crits">
+                <input type="hidden" value="{{ id_app }}" name="id_app">
+                <button class="w-100 btn btn-lg btn-primary" type="submit">Далее</button>
+            </td>
+        </tr>
+    </table>
+  </form>
+{% endblock %}

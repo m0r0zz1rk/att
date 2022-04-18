@@ -1,0 +1,81 @@
+{% extends 'auth/base_auth.html' %}
+{% load static %}
+
+{% block content %}
+<main class="form-signin">
+  <!-- <form method="POST"> -->
+    {% csrf_token %}
+    <img class="mb-4" src="{% static 'work/logo.png' %}" alt="" width="50%" height="50%">
+    <h1 class="h3 mb-3 fw-normal">АИС "Аттестация работников образования Иркутской области"<br>
+    (Система находится в стадии разработки)</h1>
+    <div class="form-floating">
+      <a href="#win1"><img src="{% static 'work/login.jpg' %}"></a>
+      <a href="#x" class="overlay" id="win1"></a>
+       <div class="popup">
+          <form method="POST">
+            {% csrf_token %}
+            {% if error is not None %}
+              <h1 class="h5 mb-3 fw-normal">{{ error }}</h1>
+            {% endif %}
+            <div class="form-floating">
+              <input type="text" class="form-control" id="floatingInput" name="username" placeholder="Логин">
+              <label for="floatingInput">Логин</label>
+            </div>
+            <div class="form-floating">
+              <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Пароль">
+              <label for="floatingPassword">Пароль</label>
+            </div>
+            <center><h3>ИЛИ</h3></center>
+            <div class="form-floating">
+              <input type="text" class="form-control" id="floatingInput" name="snils"
+                     placeholder="СНИЛС (в формате: ХХХ-ХХХ-ХХХ ХХ)">
+              <label for="floatingInput">СНИЛС (в формате: ХХХ-ХХХ-ХХХ ХХ)</label>
+            </div>
+            <div class="checkbox mb-3">
+            </div>
+            <button class="w-100 btn btn-lg btn-primary" type="submit">Войти</button>
+          </form>
+          <a class="close"title="Закрыть" href="#close"></a>
+        </div>
+    </div>
+    <div class="form-floating">
+      <a href="#win2"><img src="{% static 'work/login_operator.jpg' %}"></a>
+      <a href="#x" class="overlay" id="win2"></a>
+      <div class="popup">
+          <form method="POST" action="{% url 'applications:login_operator' %}">
+            {% csrf_token %}
+            {% if error_operator is not None %}
+              <h1 class="h5 mb-3 fw-normal">{{ error_operator }}</h1>
+            {% endif %}
+            <div class="form-floating">
+              <input type="text" class="form-control" id="floatingInput" name="username" placeholder="Логин">
+              <label for="floatingInput">Логин</label>
+            </div>
+            <div class="form-floating">
+              <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Пароль">
+              <label for="floatingPassword">Пароль</label>
+            </div>
+            <div class="checkbox mb-3">
+            </div>
+            <button class="w-100 btn btn-lg btn-primary" type="submit">Войти</button>
+          </form>
+          <a class="close"title="Закрыть" href="#close"></a>
+        </div>
+    </div><br><br>
+
+    <!--
+    <div class="form-floating">
+      <input type="text" class="form-control" id="floatingInput" name="username" placeholder="Логин">
+      <label for="floatingInput">Логин</label>
+    </div>
+    <div class="form-floating">
+      <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Пароль">
+      <label for="floatingPassword">Пароль</label>
+    </div>
+    <div class="checkbox mb-3">
+    </div>
+    <button class="w-100 btn btn-lg btn-primary" type="submit">Вход для аттестуемых/экспертов</button>
+  </form><br>
+  <center><a href="{% url 'applications:registr' %}">Регистрация</a></center>-->
+</main>
+{% endblock %}

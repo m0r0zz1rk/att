@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static distrib_tags %}
+{% block body %}
+<div class="profile" align="center" style="padding-top:-10%">
+    {% period_info as period %}
+    <label><h2>Распределенные заявки на период "{{ period.name }}" ({{ period.date_start_supply }} - {{ period.date_end_last }})</h2></label><br>
+    {% stages_list as stages %}
+    {% stages_count as dict_count %}
+    {% experts_distib as experts %}
+    {% apps_distib as apps %}
+    {% if distrib|length == 0 %}
+        <label><h3>В указанном периоде на найдено ни одной распределенной заявки</h3></label>
+    {% else %}
+        {% if distrib|length < 15 %}
+            <label><h3>Найдено {{ distrib|length }} распределенных заявок</h3></label>
+        {% else %}
+            <label><h3>Найдено {{ distrib|length }} распределенных заявок (показано последние 15 заявок)</h3></label>
+        {% endif %}
+            <table class="table_crit">
+                <thead>
+                    <tr>
+                        <th colspan="4" align="center">
+                            Эксперт
+                        </th>
+                        <th colspan="5" align="center">
+                            Аттестуемый
+                        </th>
+                        <th rowspan="2">
+                            Результат
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>ФИО</th>
+                        <th>МО</th>
+                        <th>ОО</th>
+                        <th>Предметная область, должность</th>
+                        <th>ФИО</th>
+                        <th>МО</th>
+                        <th>ОО</th>
+                        <th>Предметная область, должность</th>
+                        <th>Заявленная категория</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stage in stages %}
+                        {% if stage.name_stage != 'Оператор' %}
+                            {% for key,value in dict_count.items %}
+                                {% if key == stage.id and value != 0 %}
+                                    <tr>
+                                        <td colspan="10"><h3>{{ stage.name_stage }}</h3></td>
+                                    </tr>
+                                    {% for dist in distrib %}
+                                        {% if dist.stage_id == stage.id %}
+                                            <tr>
+                                                {% for exp in experts %}
+                                                    {% if exp.id == dist.expert_id %}
+                                                        <td>{{ exp.surname }} {{ exp.name }} {{ exp.patronymic }}</td>
+                                                        <td>{{ exp.mo }}</td>
+                                                        <td>{{ exp.oo }}</td>
+                                                        <td>{{ exp.subj }},<br>{{ exp.pos }}</td>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                {% for app in apps %}
+                                                    {% if app.id == dist.app_id %}
+                                                        <td>{{ app.user_profile.surname }} {{ app.user_profile.name }} {{ app.user_profile.patronymic }}</td>
+                                                        <td>{{ app.user_profile.mo }}</td>
+                                                        <td>{{ app.oo }}</td>
+                                                        <td>{{ app.subj_area }},<br>{{ app.pos }}</td>
+                                                        <td>{{ app.dec_cat }}</td>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                <td>
+                                                    {{ dist.result }}<br>
+                                                    <form method="POST" id="del_dist" action="{% url 'operators:del_distrib' %}">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" value="{{ dist.id }}" name="del_distrib">
+                                                        <a href="javascript:;"
+                                                             onclick="
+                                                             if (confirm('Вы действительно хотите удалить распределение?'))
+                                                             {document.getElementById('del_dist').submit();}
+                                                              ">
+                                                            <img src="{% static 'work/delete.png' %}" height="50px" width="50px"></a>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+    {% endif %}
+</div>
+{% endblock %}

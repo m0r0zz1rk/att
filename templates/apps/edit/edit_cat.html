@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load editcat_tags %}
+{% block body %}
+<form method="POST">
+    {% csrf_token %}
+    {% app as appl %}
+    {% cat_list as cats %}
+    <div class="profile" align="center" style="padding-top:-10%">
+      <label><h2>Изменить информацию о категории в заявлении № {{ appl.id }}</h2></label><br><br>
+      <label>Информация по имеющейся категории:</label><br><br>
+      <label>Имеющаяся категория</label>
+      <select class="form-control" id="floatingInput" name="cat_have" style="width: 80%; text-align: center">
+          {% if appl.cat_have is None %}
+            <option selected>не имею</option>
+          {% else %}
+            <option selected>не имею</option>
+          {% endif %}
+          {% for el in cats %}
+            {% if el.id == appl.cat_have_id  %}
+                <option selected>{{ el.name_cat }}</option>
+            {% else %}
+                <option>{{ el.name_cat }}</option>
+            {% endif %}
+          {% endfor %}
+      </select><br>
+      <label>Реквизиты правового акта</label><br>
+        {% if appl.name_doc is not None %}
+            №<input type="text" id="floatingInput" value="{{ appl.name_doc }}"
+                    name="name_doc" style="width: 33%; text-align: center">
+        {% else %}
+            №<input type="text" id="floatingInput" name="name_doc" style="width: 33%; text-align: center">
+        {% endif %}
+      от <input type="date"  id="floatingInput" value = "{{ appl.date_doc|date:'Y-m-d' }}"
+                name="date_doc" style="width: 34%; text-align: center"><br><br>
+      <label>Срок действия категории</label><br>
+      от  <input type="date" id="floatingInput" value = "{{ appl.start_cat|date:'Y-m-d' }}"
+                 name="start_cat" style="width: 33%; text-align: center">
+      до<input type="date"  id="floatingInput" value = "{{ appl.finish_cat|date:'Y-m-d' }}"
+               name="finish_cat" style="width: 34%; text-align: center"><br><br><br>
+      <label>Заявленная категория:</label>
+      <select class="form-control" id="floatingInput" name="dec_cat" style="width: 80%; text-align: center">
+          {% for el in cats %}
+            {% if el.id == appl.dec_cat_id %}
+                <option selected>{{ el.name_cat }}</option>
+            {% else %}
+                <option>{{ el.name_cat }}</option>
+            {% endif %}
+          {% endfor %}
+      </select><br>
+    </div>
+    <table align="center" style="width:20%">
+        <tr>
+            <td>
+                <input type="hidden" value="yes" name="save_cat">
+                <input type="hidden" value="{{ id_app }}" name="id_app">
+                <button class="w-100 btn btn-lg btn-primary" type="submit">Изменить информацию</button>
+            </td>
+        </tr>
+    </table>
+  </form>
+{% endblock %}

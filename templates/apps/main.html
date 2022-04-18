@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block body %}
+{% if message is not None %}
+<center><h2><blue>{{ message }}</blue></h2></center>
+{% endif %}
+<center><h1>Добро пожаловать на главную страницу АИС "Система
+    дистанционной подачи заявок для прохождения аттестации"</h1><br>
+Выберите нужный пункт меню в левой части экрана</center>
+{% endblock %}

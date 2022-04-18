@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body %}
+  {% if error is not None %}
+    <center><h2>{{ error }}</h2></center><br>
+  {% endif %}
+  <table align="center" border="0">
+    <tr border="0">
+      <td border="0">
+        <form action="{% url 'applications:new_app' %}">
+          <button class="w-100 btn btn-lg btn-primary" type="submit">Подать заявление</button>
+        </form>
+      </td>
+      <td>
+        <form action="{% url 'applications:history_apps' %}">
+          <button class="w-100 btn btn-lg btn-primary" type="submit">История заявлений</button>
+        </form>
+      </td>
+    </tr>
+  </table>
+{% endblock %}

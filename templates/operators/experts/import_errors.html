@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="profile" align="center" style="padding-top:-10%">
+  <label><h2>Во время импорта экспертов произошли следующие ошибки:</h2></label><br>
+  {% for el in error}
+    {{ el }}<br>
+  {% endfor %}
+
+</div>
+{% endblock %}

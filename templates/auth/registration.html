@@ -1,0 +1,48 @@
+{% extends 'auth/base_auth.html' %}
+{% load static %}
+
+{% block content %}
+  <main class="form-signin" align="center">
+  <form method="POST">
+    {% csrf_token %}
+    {% if error is not None %}
+    <h1 class="h5 mb-3 fw-normal">{{ error }}</h1>
+    {% endif %}
+    <h1 class="h3 mb-3 fw-normal">Регистрация нового пользователя</h1>
+    <div class="form-floating">
+      <input align="center" list="mos" class="form-control" id="floatingInput" name="mo" placeholder="МО"
+             style="width: 800px; margin-left: -250px" required>
+      <datalist id="mos">
+        {% for el in mos %}
+          <option value="{{ el.name_mo }}"></option>
+        {% endfor %}
+      </datalist>
+      <label for="floatingInput" style="margin-left: -250px">МО</label>
+    </div>
+    <div class="form-floating">
+      <input type="text" class="form-control" id="floatingInput" pattern="[0-9A-Za-z]{6,}" name="username"
+              style="width: 800px; margin-left: -250px" placeholder="Логин" required>
+      <label for="floatingInput" style="margin-left: -250px">Логин (латиница, от 6 символов)</label>
+    </div>
+     <div class="form-floating">
+      <input type="email" class="form-control" id="floatingInput" name="email"
+              style="width: 800px; margin-left: -250px" placeholder="Логин" required>
+      <label for="floatingInput" style="margin-left: -250px">Электронная почта</label>
+    </div>
+    <div class="form-floating">
+      <input type="password" class="form-control" id="floatingPassword" name="password"
+              style="width: 800px; margin-left: -250px" placeholder="Пароль" required>
+      <label for="floatingPassword" style="margin-left: -250px">Пароль</label>
+    </div>
+    <div class="form-floating">
+      <input type="password" class="form-control" id="floatingPassword" name="password2"
+              style="width: 800px; margin-left: -250px" placeholder="Подтверждение пароля" required>
+      <label for="floatingPassword" style="margin-left: -250px">Подтверждение пароля</label>
+    </div>
+    <div class="checkbox mb-3">
+    </div>
+    <button class="w-100 btn btn-lg btn-primary" type="submit">Зарегистрироваться</button>
+  </form><br>
+  <center><a href="{% url 'login_user' %}">На страницу входа</a></center>
+</main>
+{% endblock %}

@@ -1,0 +1,311 @@
+{% extends 'base.html' %}
+{% load static expertise_tags detailapp_tags %}
+{% block body %}
+{% get_marks as marks %}
+{% get_appres as res %}
+{% get_have_marks as have_marks %}
+{% change_status as status %}
+<div class="profile" align="center" style="padding-top:-10%">
+    <label><h2>Экспертиза заявки от аттестуемого "{{ app.user_profile.surname }} {{ app.user_profile.name }} {{ app.user_profile.patronymic }}"</h2></label><br>
+    <div style="align: center; width: 50%">
+        <button class="w-100 btn btn-lg btn-primary" onclick="window.location.href = '{% url 'expert:apps' %}';" >
+          Вернутся к списку новых заявок</button>
+    </div><br>
+    <table class="table_crit">
+        <thead>
+            <tr>
+                <th colspan="3">Быстрый переход по разделам</th>
+            </tr>
+        </thead>
+        <tbody>
+                <td>
+                    <a href="#att_info">Информация об аттестуемом</a>
+                </td>
+                {% if res|length > 1 %}
+                    <td>
+                        <a href="#result">Результат экспертизы</a>
+                    </td>
+                {% endif %}
+                <td>
+                    <a href="#info_crits">Информация по критериям</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table_crit" id="att_info">
+        <thead>
+            <tr>
+                <th colspan="2">
+                    Информация об аттестуемом
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Дата подачи заявления</td>
+                <td>{{ app.date_reg|date:"d.m.Y" }}</td>
+            </tr>
+            <tr>
+                <td>Фамилия</td>
+                <td>{{ app.user_profile.surname }}</td>
+            </tr>
+            <tr>
+                <td>Имя</td>
+                <td>{{ app.user_profile.name }}</td>
+            </tr>
+            <tr>
+                <td>Отчество</td>
+                <td>{{ app.user_profile.patronymic }}</td>
+            </tr>
+            <tr>
+                <td>МО</td>
+                <td>{{ app.user_profile.mo }}</td>
+            </tr>
+            <tr>
+                <td>ОО</td>
+                <td>{{ app.oo.full_name }}</td>
+            </tr>
+            <tr>
+                <td>Стаж работы в ОО (лет)</td>
+                <td>{{ app.oo_exp }}</td>
+            </tr>
+            <tr>
+                <td>Предметная область</td>
+                <td>{{ app.subj_area }}</td>
+            </tr>
+            <tr>
+                <td>Должность</td>
+                <td>{{ app.pos }}</td>
+            </tr>
+            <tr>
+                <td>Стаж работы в должности (лет)</td>
+                <td>{{ app.pos_exp }}</td>
+            </tr>
+            {% if app.cat_have is not None %}
+                <tr>
+                    <td>Имеющаяся категория</td>
+                    <td>{{ app.cat_have }}</td>
+                </tr>
+                <tr>
+                    <td>Срок действия категории</td>
+                    <td>{{ app.start_cat|date:"d.m.Y" }} - {{ app.finish_cat|date:"d.m.Y" }}</td>
+                </tr>
+                <tr>
+                    <td>№ документа</td>
+                    <td>{{ app.name_doc }}</td>
+                </tr>
+                <tr>
+                    <td>Дата</td>
+                    <td>{{ app.date_doc }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td>Имеющаяся категория</td>
+                    <td>Нет</td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td>Заявленная категория</td>
+                <td>{{ app.dec_cat }}</td>
+            </tr>
+            <tr>
+                <td>Форма аттестации</td>
+                <td>{{ app.form }}</td>
+            </tr>
+        </tbody>
+    </table>
+    {% if res|length > 1 %}
+        <table class="table_crit" id="result">
+            <thead>
+                <tr>
+                    <th colspan="2">Результат экспертизы</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Порог баллов на квалификационную категорию</td>
+                    <td>
+                       {{ res.total }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Сумма баллов, поставленных экспертом</td>
+                    <td>
+                       {{ res.res }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Итоговый результат</td>
+                    <td>
+                        {% if res.total <= res.res %}
+                            <b style="color: #22b840">Установить</b>
+                        {% else %}
+                            <b style="color: #f15b4e">Отказать</b>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    {% endif %}
+    <table class="table_crit" id="info_crits">
+        <thead>
+            <tr>
+                <th colspan="3">Предоставленная информация</th>
+                <th rowspan="2">Балл/Замечание</th>
+            </tr>
+            <tr>
+                <th>Наименование критерия</th>
+                <th>Информация</th>
+                <th>Файл</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if app.get_criterias|length == 0 %}
+                <tr>
+                    <td colspan="5">
+                        Аттестуемый еще не приступил к заполнению информации по критериям
+                    </td>
+                </tr>
+            {% else %}
+                {% for name, parent in app.get_criterias.items %}
+                    <tr>
+                        {% if parent is not None %}
+                            <td style="width: 40%"><span id="anchor_{{ forloop.counter }}"></span>{{ name }}</td>
+                            <td style="width: 15%">
+                                {% if name in app.get_critdata.keys %}
+                                    <div id="zatemnenie_{{ forloop.counter }}">
+                                      <div id="okno_{{ forloop.counter }}">
+                                          <table class="table_crit" align="center" style="width: 80%">
+                                            <thead>
+                                              <tr>
+                                                {% for key1, value1 in app.get_critdata.items %}
+                                                  {% if name == key1 %}
+                                                    {% for k, v in value1.items %}
+                                                        <th>{{ k }}</th>
+                                                    {% endfor %}
+                                                  {% endif %}
+                                                {% endfor %}
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for key, value in app.get_critdata.items %}
+                                                  {% if name == key %}
+                                                    {% for k1, v1 in value.items %}
+                                                        {% if forloop.counter <= v1|length %}
+                                                            {% with forloop.counter0 as main %}
+                                                            <tr>
+                                                                {% for k2 in value.keys %}
+                                                                    <td>
+                                                                        {% for k3, v3 in value.items %}
+                                                                            {% if k2 == k3 %}
+                                                                                {{ v3|list_item:main }}
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </td>
+                                                                {% endfor %}
+                                                            </tr>
+                                                            {% endwith %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                  {% endif %}
+                                                {% endfor %}
+                                            </tbody>
+                                          </table>
+                                      <a href="#anchor_{{ forloop.counter }}" class="close">Закрыть окно</a>
+                                      </div>
+                                    </div>
+                                    <a href='#zatemnenie_{{ forloop.counter }}'>
+                                        <img src="{% static 'work/table.png' %}" height="50px" width="50px">
+                                    </a>
+                                {% else %}
+                                    Нет информации
+                                {% endif %}
+                            </td>
+                            <td style="width: 15%">
+                                {% if name in app.get_critfile.keys %}
+                                    {% for key, value in app.get_critfile.items %}
+                                        {% if name == key %}
+                                            <form method="POST" action="{% url 'applications:doc_view' %}" id="form_{{ key }}" target="_blank">
+                                                {% csrf_token %}
+                                                <input type="hidden" value="{{ value }}" name="path">
+                                                <a href="javascript:;" onclick="document.getElementById('form_{{ key }}').submit();">
+                                                    <img src="{% static 'work/show.png' %}" height="50px" width="50px">
+                                                </a>
+                                            </form>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    Нет файла
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% for key,value in have_marks.items %}
+                                    {% if name == key %}
+                                        <div align="center">
+                                            <b>Установленный балл:</b><br> {{ value.0 }}<br><br>
+                                            <b>Указанное замечание:</b><br> {{ value.1 }}<br><br>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                                <div id="zatemnenie_mark_{{ forloop.counter }}">
+                                      <div id="okno_mark_{{ forloop.counter }}">
+                                          <div>
+                                              <center><h3>{{ name }}</h3></center><br>
+                                              <form action="{% url 'expert:add_mark' %}" method="POST">
+                                                  {% csrf_token %}
+                                                  <table class="table_crit" align="center" style="width: 80%">
+                                                    <thead>
+                                                      <tr>
+                                                        <th>Параметр</th>
+                                                        <th>Значение</th>
+                                                      </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>Балл</td>
+                                                            <td>
+                                                                <select class="form-control" style="text-align:center" name="mark">
+                                                                    {% for key, value in marks.items %}
+                                                                        {% if name == key %}
+                                                                            {% for el in value %}
+                                                                                <option>{{ el }}</option>
+                                                                            {% endfor %}
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Замечание</td>
+                                                            <td>
+                                                                <textarea class="form-control" name="info"></textarea>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                  </table>
+                                                  <center>
+                                                    <div style="width: 30%">
+                                                        <input type="hidden" value="anchor_{{ forloop.counter }}" name="anchor">
+                                                        <input type="hidden" value="{{ app.id }}" name="app">
+                                                        <input type="hidden" value="{{ name }}" name="crit">
+                                                        <button type="submit" class="w-100 btn btn-lg btn-primary">Сохранить</button>
+                                                    </div></center>
+                                              </form>
+                                            <a href="#anchor_{{ forloop.counter }}" class="close">Закрыть окно</a>
+                                          </div>
+                                      </div>
+                                    </div>
+                                    <a href='#zatemnenie_mark_{{ forloop.counter }}'>
+                                        <img src="{% static 'work/mark.png' %}" height="50px" width="50px">
+                                    </a>
+                            </td>
+                        {% else %}
+                            <td colspan="4" style="background-color: #d8d8d8"><h5>{{ name }}</h5></td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% load static main_tags AD_tags %}
+{% get_group as group %}
+<div class="d-flex flex-column flex-shrink-0 p-3 bg-light"  style="height: 100%">
+    <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+      <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
+      <span class="fs-4">АИС "АРО" {{ check }}</span>
+    </a>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto">
+        {% if group == 'Аттестуемый' %}
+      <li class="nav-item">
+        <a href="/" class="nav-link" aria-current="page">
+          <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
+          Главная
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'applications:apps_choose' %}" class="nav-link">
+          <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
+          Заявки
+        </a>
+      </li>
+    {% elif group == 'Эксперт' %}
+      <li class="nav-item">
+        <a href="/expert/" class="nav-link" aria-current="page">
+          <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
+          Главная
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'expert:expertise' %}" class="nav-link">
+          <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
+          Экспертиза
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'applications:apps_choose' %}" class="nav-link">
+          <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
+          Аналитика
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'applications:apps_choose' %}" class="nav-link">
+          <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
+          Статистика
+        </a>
+      </li>
+    {% else %}
+          <li class="nav-item">
+            <a href="/operator/" class="nav-link" aria-current="page">
+              <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
+              Главная
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'operators:periods_list' %}" class="nav-link" aria-current="page">
+              <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
+              Периоды
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'operators:apps_list' %}" class="nav-link" aria-current="page">
+              <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
+              Заявки
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'operators:experts_list' %}" class="nav-link" aria-current="page">
+              <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
+              Эксперты
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'applications:apps_choose' %}" class="nav-link">
+              <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
+              Сообщения
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'operators:expertise_main' %}" class="nav-link">
+              <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
+              Экспертиза
+            </a>
+          </li>
+            <li>
+            <a href="/admin/" class="nav-link" target="_blank">
+              <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
+              Панель администратора
+            </a>
+          </li>
+    {% endif %}
+    </ul>
+    <hr>
+    <div class="dropdown">
+      <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
+        <img src="{% static 'work/user.jpg' %}" alt="" width="32" height="32" class="rounded-circle me-2">
+        {% if group == 'Эксперт'%}
+          {% get_username as usname %}
+          <strong>{{ usname }}</strong>
+        {% elif group == 'Аттестуемый' %}
+          <strong>{{ request.user.username }}</strong>
+        {% else %}
+          {% get_adinfo as ad %}
+          <strong style="text-font: 12pt;">{{ ad.username }}</strong>
+        {% endif %}
+      </a>
+      <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2" style="">
+        {% if group == 'Аттестуемый' %}
+            <li><a class="dropdown-item" href="{% url 'applications:profile' %}">Профиль</a></li>
+        {% elif group == 'Эксперт' %}
+            <li><a class="dropdown-item" href="{% url 'expert:profile' %}">Профиль</a></li>
+        {% else %}
+            <li><a class="dropdown-item">{{ ad.group }}</a></li>
+        {% endif %}
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="{% url 'applications:logout_user' %}">Выход</a></li>
+      </ul>
+    </div>
+  </div>

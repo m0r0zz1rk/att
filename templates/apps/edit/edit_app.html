@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load editapp_tags %}
+{% block body %}
+{% get_profile as prof %}
+{% get_infoapp  as app %}
+{% get_mail  as mail %}
+{% get_oos as oos %}
+{% get_subjareas as sas %}
+{% get_pos as pos %}
+<form method="POST">
+    {% csrf_token %}
+    <div class="profile" align="center" style="padding-top:-10%">
+      <label><h2>Изменение информации в анкете заявления № {{ id_app }}</h2></label><br><br>
+      <label>Фамилия</label>
+      <input type="text" class="form-control" id="floatingInput"
+                   name="family" value="{{ prof.surname }}" style="width: 50%; text-align: center" disabled><br>
+      <label>Имя</label>
+      <input type="text" class="form-control" id="floatingInput"
+                   name="name" value="{{ prof.name }}" style="width: 50%; text-align: center" disabled><br>
+      <label>Отчество</label>
+      <input type="text" class="form-control" id="floatingInput"
+                   name="family" value="{{ prof.patronymic }}" style="width: 50%; text-align: center" disabled><br>
+      <label>Пол</label>
+      <input type="text" class="form-control" id="floatingInput"
+                   name="family" value="
+                      {% if prof.sex is True %}
+                      Мужской
+                      {% else %}
+                      Женский
+                      {% endif %}
+                    " style="width: 50%; text-align: center" disabled><br>
+      <label>Электронная почта</label>
+      <input type="email" class="form-control" id="floatingInput"
+                   name="family" value="{{ mail }}" style="width: 50%; text-align: center" disabled><br>
+      <label>Муниципальное образование</label>
+      <input type="text" class="form-control" id="floatingInput"
+                   name="family" value="{{ prof.mo }}" style="width: 50%; text-align: center" disabled><br>
+      <label>Педагогический стаж (лет):</label>
+      <input type="number" class="form-control" id="floatingInput"
+                  value="{{ app.teach_exp }}" name="teach_exp" style="width: 50%; text-align: center" required><br>
+      <label>Образовательная организация:</label>
+      <input list="ooslist" value="{{ app.oo.short_name }}" class="form-control" name="oo"
+             placeholder="Начните вводить название оо" style="width:50%; text-align: center" required>
+      <datalist id="ooslist" class="oo_field">
+        {% for el in oos %}
+            <option value="{{ el.short_name }}">
+        {% endfor %}
+      </datalist>
+      <br>
+      <label>Стаж работы в ОО (лет):</label>
+      <input type="number" class="form-control" id="floatingInput"
+                value="{{ app.oo_exp }}"   name="oo_exp" style="width: 50%; text-align: center" required><br>
+      <label>Предметная область:</label>
+      <input list="saslist" value="{{ app.subj_area.name }}" class="form-control" name="subj_area"
+             placeholder="Начните вводить название предметной области"
+             style="width:50%; text-align: center" required>
+      <datalist id="saslist" class="oo_field">
+        {% for el in sas %}
+            <option value="{{ el.name }}">
+        {% endfor %}
+      </datalist>
+      <br>
+      <label>Должность:</label>
+      <input list="poslist" class="form-control" name="pos"
+             value="{{ app.pos.name_pos }}" placeholder="Начните вводить название должности"
+             style="width:50%; text-align: center" required>
+      <datalist id="poslist" class="oo_field">
+        {% for el in pos %}
+            <option value="{{ el.name_pos }}">
+        {% endfor %}
+      </datalist>
+      <br>
+      <label>Стаж работы в должности (лет):</label>
+      <input type="number" class="form-control" id="floatingInput"
+             value="{{ app.pos_exp }}" name="pos_exp" style="width: 50%; text-align: center"><br><br>
+    </div>
+    <table align="center" style="width: 20%">
+      <tr>
+        <td>
+          <input type="hidden" value="{{ id_app }}" name="id_app">
+          <input type="hidden" value="yes" name="save">
+          <button class="w-100 btn btn-lg btn-primary" type="submit">Сохранить изменения</button>
+        </td>
+      </tr>
+    </table>
+  </form>
+{% endblock %}

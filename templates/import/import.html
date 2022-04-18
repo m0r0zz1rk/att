@@ -1,0 +1,14 @@
+<html>
+<head>
+</head>
+<body>
+	<center>Выберите файл для загрузки:</center><br>
+	<form method="POST" enctype="multipart/form-data">
+		{% csrf_token %}
+		<center>
+			<input type="file" name="excel" accept=".xlsx" required><br>
+		</center><br>
+		<center><button type="submit">Загрузить список</button></center>
+	</form>
+</body>
+</html>

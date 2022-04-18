@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static upload_tags %}
+{% block body %}
+<div class="profile" align="center" style="padding-top:-10%">
+    {% get_crit as crit %}
+    {% get_path as path %}
+    <label><h2>Загрузка документа для критерия "{{ crit.name }} - {{ crit.description }}"</h2></label><br><br>
+    <table class="table_crit">
+      <thead>
+        <tr>
+          <th>Информация о документе:</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align:justify">
+            {% if crit.description_upload is None %}
+              Информация отсутствует
+            {% else %}
+              {{ crit.description_upload }}
+            {% endif %}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    {% if path is not None %}
+    <table class="table_crit">
+      <thead>
+        <tr>
+          <th>Текущий документ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+              <form action="{% url 'applications:doc_view' %}" method="POST" target="_blank">
+                {% csrf_token %}
+                <input type="hidden" value="{{ path }}" name="path">
+                <button class="w-100 btn btn-lg btn-primary" type="submit">Просмотр</button>
+              </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    {% endif %}
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <table class="table_crit">
+        <thead>
+          <tr>
+            <th>Выберите документ для загрузки<br>(максимальный размер - 20 мб, формат - pdf)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <input type="hidden" value="{{ id_app }}" name="id_app">
+              <input type="hidden" value="{{ id_crit }}" name="id_crit">
+              <input type="hidden" value="yes" name="upload">
+              {{ form.file }}
+            </td>
+          </tr>
+          <tr>
+            <td><button class="w-100 btn btn-lg btn-primary" type="submit">Загрузить документ</button></td>
+          </tr>
+        </tbody>
+      </table>
+  </form>
+  <table align="center" style="width:35%">
+    <tr>
+      <td>
+        <form method="POST">
+          {% csrf_token %}
+          <input type="hidden" value="{{ id_app }}" name="id_app">
+          <input type="hidden" value="{{ id_crit }}" name="id_crit">
+          <input type="hidden" value="yes" name="no_upload">
+          <button class="w-100 btn btn-lg btn-primary" type="submit">
+            Вернуться к критериям без загрузки документа
+          </button>
+        </form>
+      </td>
+    </tr>
+  </table>
+  {% if error is not None%}
+     <div class="tn-box tn-box-color-2" style="background: red">
+        <p>{{ error }}</p>
+       <div class="tn-progress"></div>
+     </div>
+  {% endif %}
+</div>
+
+
+{% endblock %}

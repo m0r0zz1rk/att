@@ -1,0 +1,349 @@
+{% extends 'base.html' %}
+{% load static detailapp_tags %}
+{% block body %}
+{% get_total as total %}
+<div class="profile" align="center" style="padding-top:-10%">
+    <label><h2>Просмотр заявки № {{ app.id }}</h2></label><br>
+    <table class="table_crit">
+        <thead>
+            <tr>
+                <th style="width: 50%">Статус заявки:</th>
+                <th>{{ app.status }}</th>
+            </tr>
+        </thead>
+    </table>
+    <table class="table_crit">
+        <thead>
+            <tr>
+                <th colspan="2">
+                    Информация об аттестуемом
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Дата подачи заявления</td>
+                <td>{{ app.date_reg|date:"d.m.Y" }}</td>
+            </tr>
+            <tr>
+                <td>Фамилия</td>
+                <td>{{ app.user_profile.surname }}</td>
+            </tr>
+            <tr>
+                <td>Имя</td>
+                <td>{{ app.user_profile.name }}</td>
+            </tr>
+            <tr>
+                <td>Отчество</td>
+                <td>{{ app.user_profile.patronymic }}</td>
+            </tr>
+            <tr>
+                <td>МО</td>
+                <td>{{ app.user_profile.mo }}</td>
+            </tr>
+            <tr>
+                <td>ОО</td>
+                <td>{{ app.oo.full_name }}</td>
+            </tr>
+            <tr>
+                <td>Стаж работы в ОО (лет)</td>
+                <td>{{ app.oo_exp }}</td>
+            </tr>
+            <tr>
+                <td>Предметная область</td>
+                <td>{{ app.subj_area }}</td>
+            </tr>
+            <tr>
+                <td>Должность</td>
+                <td>{{ app.pos }}</td>
+            </tr>
+            <tr>
+                <td>Стаж работы в должности (лет)</td>
+                <td>{{ app.pos_exp }}</td>
+            </tr>
+            {% if app.cat_have is not None %}
+                <tr>
+                    <td>Имеющаяся категория</td>
+                    <td>{{ app.cat_have }}</td>
+                </tr>
+                <tr>
+                    <td>Срок действия категории</td>
+                    <td>{{ app.start_cat|date:"d.m.Y" }} - {{ app.finish_cat|date:"d.m.Y" }}</td>
+                </tr>
+                <tr>
+                    <td>№ документа</td>
+                    <td>{{ app.name_doc }}</td>
+                </tr>
+                <tr>
+                    <td>Дата</td>
+                    <td>{{ app.date_doc }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td>Имеющаяся категория</td>
+                    <td>Нет</td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td>Заявленная категория</td>
+                <td>{{ app.dec_cat }}</td>
+            </tr>
+            <tr>
+                <td>Форма аттестации</td>
+                <td>{{ app.form }}</td>
+            </tr>
+        </tbody>
+    </table>
+    {% if app.get_experts|length > 0 %}
+        <table class="table_crit">
+            <thead>
+                <tr>
+                    <th colspan="{{ app.get_experts|length|add:'1' }}">
+                        Информация о назначенных экспертах
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Этап всестороннего анализа</td>
+                    {% for el in app.get_experts %}
+                        <td>{{ el.stage }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Фамилия</td>
+                    {% for el in app.get_experts %}
+                        <td>{{ el.expert.surname }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Имя</td>
+                    {% for el in app.get_experts %}
+                        <td>{{ el.expert.name }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Отчество</td>
+                    {% for el in app.get_experts %}
+                        <td>{{ el.expert.patronymic }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>МО</td>
+                    {% for el in app.get_experts %}
+                        <td>{{ el.expert.mo }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>ОО</td>
+                    {% for el in app.get_experts %}
+                        <td>{{ el.expert.oo }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Предметная область</td>
+                    {% for el in app.get_experts %}
+                        <td>{{ el.expert.subj }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Должность</td>
+                    {% for el in app.get_experts %}
+                        <td>{{ el.expert.pos }}</td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    {% endif %}
+    {% if app.get_experts|length > 0 %}
+        <table class="table_crit">
+            <thead>
+                <tr>
+                    <th colspan="{{ app.get_experts|length|add:'1' }}">
+                        Результаты на основе экспертизы
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Эксперт</td>
+                    {% for el in app.get_experts %}
+                        <td>{{ el.expert.surname }} {{ el.expert.name }} {{ el.expert.patronymic }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Сумма баллов</td>
+                    {% for el in app.get_experts %}
+                        <td>
+                            {% if app.id in el.expert.get_apps %}
+                                {% for res in el.expert.get_result %}
+                                    {% if res.app_id == app.id %}
+                                        {{ res.total_mark }}
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <b>Экспертиза не проведена</b>
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Порог баллов на квалификационную категорию</td>
+                    <td colspan="{{ app.get_experts|length }}" style="text-align: center">{{ total }}</td>
+                </tr>
+                <tr>
+                    <td>Итоговый результат</td>
+                    {% for el in app.get_experts %}
+                        <td>
+                            {% if app.id in el.expert.get_apps %}
+                                {% for res in el.expert.get_result %}
+                                    {% if res.app_id == app.id %}
+                                            {% if res.result == 'Установить' %}
+                                                <b style="color: #22b840">Установить</b>
+                                            {% else %}
+                                                <b style="color: #f15b4e">Отказать</b>
+                                            {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <b>Экспертиза не проведена</b>
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    {% endif %}
+    <table class="table_crit">
+        <thead>
+            <tr>
+                <th colspan="3">Предоставленные данные по критериям</th>
+                {% if app.get_experts|length > 0 %}
+                    <th colspan="{{ app.get_experts|length|add:'1' }}">Баллы от экспертов</th>
+                {% endif %}
+            </tr>
+            <tr>
+                <th style="width: 30%">Наименование критерия</th>
+                <th style="width: 15%">Информация</th>
+                <th style="width: 15%">Файл</th>
+                {% for el in app.get_experts %}
+                    <th>{{ el.expert.surname }}<br>{{ el.expert.name }}<br>{{ el.expert.patronymic }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% if app.get_criterias|length == 0 %}
+                <tr>
+                    {% if app.get_expert|length == 0 %}
+                        <td colspan="3">
+                    {% else %}
+                        <td colspan="{{ app.get_expert|length|add:3 }}">
+                    {% endif %}
+                            Пользователь еще не приступил к заполнению информации по критериям
+                    </td>
+                </tr>
+            {% else %}
+                {% for name, parent in app.get_criterias.items %}
+                    <tr>
+                        {% if parent is not None %}
+                            <td><span id="anchor_{{ forloop.counter }}"></span>{{ name }}</td>
+                            <td>
+                                {% if name in app.get_critdata.keys %}
+                                    <div id="zatemnenie_{{ forloop.counter }}">
+                                      <div id="okno_{{ forloop.counter }}">
+                                          <table class="table_crit" align="center" style="width: 80%">
+                                            <thead>
+                                              <tr>
+                                                {% for key1, value1 in app.get_critdata.items %}
+                                                  {% if name == key1 %}
+                                                    {% for k, v in value1.items %}
+                                                        <th>{{ k }}</th>
+                                                    {% endfor %}
+                                                  {% endif %}
+                                                {% endfor %}
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for key, value in app.get_critdata.items %}
+                                                  {% if name == key %}
+                                                    {% for k1, v1 in value.items %}
+                                                        {% if forloop.counter <= v1|length %}
+                                                            {% with forloop.counter0 as main %}
+                                                            <tr>
+                                                                {% for k2 in value.keys %}
+                                                                    <td>
+                                                                        {% for k3, v3 in value.items %}
+                                                                            {% if k2 == k3 %}
+                                                                                {{ v3|list_item:main }}
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </td>
+                                                                {% endfor %}
+                                                            </tr>
+                                                            {% endwith %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                  {% endif %}
+                                                {% endfor %}
+                                            </tbody>
+                                          </table>
+                                      <a href="#anchor_{{ forloop.counter }}" class="close">Закрыть окно</a>
+                                      </div>
+                                    </div>
+                                    <button class="w-100 btn btn-lg btn-primary"
+                                            onclick="window.location.href = '#zatemnenie_{{ forloop.counter }}';">
+                                        Показать
+                                    </button>
+                                {% else %}
+                                    Нет информации
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if name in app.get_critfile.keys %}
+                                    {% for key, value in app.get_critfile.items %}
+                                        {% if name == key %}
+                                            <form method="POST" action="{% url 'applications:doc_view' %}" target="_blank">
+                                                {% csrf_token %}
+                                                <input type="hidden" value="{{ value }}" name="path">
+                                                <button class="w-100 btn btn-lg btn-primary" type="submit">
+                                                    Открыть
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    Нет файла
+                                {% endif %}
+                            </td>
+                            {% for el in app.get_experts  %}
+                                <td>
+                                    {% if app.id in el.expert.get_apps %}
+                                        {% for appl, dict in el.expert.get_marks_info.items %}
+                                            {% if app.id == appl %}
+                                                {% if name in dict.keys %}
+                                                    {% for key, value in dict.items %}
+                                                        {% if key == name %}
+                                                            <b>Установленный балл:</b><br>{{ value.0 }}<br>
+                                                            <b>Указанное замечание:</b><br>{{ value.1 }}<br>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% else %}
+                                                    Нет оценки эксперта
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        Экспертиза не проведена
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        {% else %}
+                            <td colspan="{{ app.get_experts|length|add:'3' }}" style="background-color: #d8d8d8"><h5>{{ name }}</h5></td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

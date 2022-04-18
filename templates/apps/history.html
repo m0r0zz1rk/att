@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static history_tags%}
+{% block body %}
+{% apps_list as apps %}
+<div class="profile" align="center" style="padding-top:-10%">
+    <label><h2>История подачи заявок</h2></label><br><br>
+    {% if wrong_date is not None %}
+        <center><h3>На данный момент внести информацию и документы по критериям нельзя!</h3></center>
+    {% endif %}
+    {% if apps|length == 0 %}
+       <label><h3>Не было подано ни одной заявки</h3></label>
+    {% else %}
+      <table class="table_crit">
+        <thead>
+          <tr>
+            <th>Дата подачи заявки</th>
+            <th>Образовательная организация</th>
+            <th>Предметная область</th>
+            <th>Должность</th>
+            <th>Заявленная категория (Форма аттестации)</th>
+            <th>Статус</th>
+            <th>Действия</th>
+            <th>Отзыв</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for el in apps %}
+            <tr>
+              <td>
+                {{ el.date_reg|date:"d.m.Y" }}
+              </td>
+              <td>
+                {{ el.oo }}
+              </td>
+              <td>
+                {{ el.subj_area }}
+              </td>
+              <td>
+                {{ el.pos }}
+              </td>
+              <td>
+                {{ el.dec_cat }}<br>({{ el.form }})
+              </td>
+              <td>
+                {{ el.status }}
+              </td>
+              <td>
+                <div id="zatemnenie_{{ el.id }}">
+                  <div id="okno_{{ el.id }}">
+                      <div style="width: 30%; margin: 0 auto;">
+                          <form action="{% url 'applications:edit_app' %}" method="POST">
+                              {% csrf_token %}
+                              <input type="hidden" value="{{ el.id }}" name="id_app">
+                              <button class="w-100 btn btn-lg btn-primary" type="submit">
+                                Просмотр анкеты аттестуемого
+                              </button>
+                            </form><br>
+                             <form action="{% url 'applications:edit_cat' %}" method="POST">
+                                    {% csrf_token %}
+                                  <input type="hidden" value="{{ el.id }}" name="id_app">
+                                  <button class="w-100 btn btn-lg btn-primary" type="submit">
+                                    Просмотр информации об аттестационных категориях
+                                  </button>
+                             </form>
+                              {% if el.status == 'Назначено' %}
+                                 <br><form action="{% url 'applications:new_app_crits' %}" method="POST">
+                                    {% csrf_token %}
+                                  <input type="hidden" value="{{ el.id }}" name="id_app">
+                                  <button class="w-100 btn btn-lg btn-primary" type="submit">
+                                    Информация и документы по критериям
+                                  </button>
+                                </form>
+                              {% endif %}
+                          <a href="#" class="close">Закрыть окно</a>
+                      </div>
+                  </div>
+                </div>
+                <a href="#zatemnenie_{{ el.id }}"><img src="{% static 'work/menu.png' %}" height="50px" width="50px"></a>
+              </td>
+              <td>
+                {% if el.status != 'Отозвано' %}
+                <a type="submit" href="/rejection_app/{{ el.id }}"
+                   onclick="return confirm('Вы действительно хотите отозвать заявление?')">
+                    <img src="{% static 'work/back.png' %}" height="50px" width="50px"></a>
+                {% else %}
+                  Отозвано
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+    {% if create_app is not None %}
+     <div class="tn-box tn-box-color-2" style="background:#226440">
+        <p>Заявка успешно принята!</p>
+       <div class="tn-progress"></div>
+     </div>
+    {% endif %}
+    {% if edit_app is not None%}
+     <div class="tn-box tn-box-color-2" style="background:#226440">
+        <p>Заявка успешно отредактирована!</p>
+       <div class="tn-progress"></div>
+     </div>
+    {% endif %}
+    {% if rejection_app is not None%}
+     <div class="tn-box tn-box-color-2" style="background:#226440">
+        <p>Заявка успешно отозвана!</p>
+       <div class="tn-progress"></div>
+     </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static periods_tags %}
+{% block body %}
+{% periods_list as periods %}
+  {% if apps_broke is not None %}
+    <center>Во время автоматического распределения некоторые заявки не удалось распределить:<br>
+    {% for el in apps_broke %}
+      {{ el }}<br>
+    {% endfor %}
+    </center>
+  {% endif %}
+  {% if info is not None %}
+    <center>{{ info }}</center>
+  {% endif %}
+  <table align="center" border="0">
+    <tr border="0">
+      <td border="0">
+        <button class="w-100 btn btn-lg btn-primary" onclick="window.location.href = '{% url 'expert:apps' %}';" >
+          Новые заявки</button>
+      </td>
+      </tr>
+      <tr>
+      <td>
+        <button class="w-100 btn btn-lg btn-primary" onclick="window.location.href = '{% url 'expert:archive' %}';" >
+          Архив заявок</button>
+      </td>
+    </tr>
+  </table>
+{% endblock %}
