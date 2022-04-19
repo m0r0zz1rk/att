@@ -189,7 +189,7 @@ STATICFILES_DIR = [
     STATIC_ROOT,
 ]
 
-MEDIA_ROOT = env('MEDIA_ROOT')
+MEDIA_ROOT = '\\\\'+env('MEDIA_ROOT')
 MEDIA_URL = '/documents/'
 
 # Default primary key field type
@@ -197,4 +197,4 @@ MEDIA_URL = '/documents/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CSRF_TRUSTED_ORIGINS = ['https://att.coko38.ru']
+CSRF_TRUSTED_ORIGINS = [env('CSRF_TRUSTED')]
