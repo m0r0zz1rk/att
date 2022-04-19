@@ -27,7 +27,7 @@ AUTH_LDAP_SERVER_URI = env('LDAP_SERVER_URI')
 AUTH_LDAP_BIND_DN = env('LDAP_BIND_DN')
 AUTH_LDAP_BIND_PASSWORD = env('LDAP_BIND_PASSWORD')
 AUTH_LDAP_USER_SEARCH = LDAPSearch(
-            "OU=Users,OU=CMN,OU=COKO,DC=coko38,DC=ru", ldap.SCOPE_SUBTREE, "sAMAccountName=%(user)s"
+            env('LDAP_USER_SEARCH'), ldap.SCOPE_SUBTREE, "sAMAccountName=%(user)s"
             )
 
 AUTH_LDAP_USER_ATTR_MAP = {
